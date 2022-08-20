@@ -1,0 +1,69 @@
+@import '../../../../sass/variables';
+@import '../../../../sass/mixins';
+
+.wrapper {
+  z-index: 100;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  overflow-x: hidden;
+  height: 100vh;
+  width: $width-sidebar;
+  background: $color-primary;
+  transition: all 0.2s ease 0s;
+  transform: translateZ(0px);
+  &:hover {
+    width: $width-sidebar-hover;
+    box-shadow: rgb(0 0 0 / 60%) 0px 0px 50px 0px;
+    .search-task,
+    .create-task,
+    .question {
+      span {
+        visibility: visible;
+      }
+    }
+  }
+
+  .logo {
+    height: 52px;
+    margin: 20px 0 10px;
+    padding: 10px;
+
+    .logo-icon {
+      margin-left: 8px;
+      font-size: 28px;
+      color: #b4cef4;
+      cursor: pointer;
+    }
+  }
+  .search-task,
+  .create-task,
+  .question {
+    position: relative;
+    width: 100%;
+    height: 42px;
+    line-height: 42px;
+    color: #deebff;
+    transition: color 0.1s ease 0s;
+    cursor: pointer;
+    display: flex;
+    padding-left: 20px;
+    align-items: center;
+    span {
+      visibility: hidden;
+      white-space: nowrap;
+    }
+    i {
+      font-size: 24px;
+      margin-right: 15px;
+    }
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+  .question {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+  }
+}

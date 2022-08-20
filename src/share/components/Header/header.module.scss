@@ -1,0 +1,75 @@
+@import '../../../sass/variables';
+
+.wrapper {
+  width: 1200px;
+  margin: 0 auto;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .header-logo {
+    margin-right: 30px;
+    img {
+      cursor: pointer;
+      height: 26px;
+      width: 215px;
+    }
+  }
+  .header-content {
+    display: flex;
+    align-items: center;
+    list-style-position: inside;
+    flex-grow: 1;
+    height: 100%;
+
+    li {
+      padding: 19px 15px;
+      float: left;
+      font-style: bold;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s linear;
+
+      &:hover {
+        color: $color-primary;
+      }
+    }
+  }
+  .header-user {
+    display: flex;
+    align-items: center;
+    p {
+      padding: 10px 15px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    p:nth-child(2) {
+      background-color: $color-primary;
+      color: $white;
+      border-radius: 5px;
+      transition: all 0.2s linear;
+      &:hover {
+        background-color: $color-hover;
+      }
+    }
+    p:nth-child(1) {
+      transition: all 0.2s linear;
+      &:hover {
+        text-decoration: underline;
+        color: $color-primary;
+      }
+    }
+  }
+  .header-user-login {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    &:hover {
+      color: $color-primary;
+    }
+    i {
+      font-size: 18px;
+      margin-right: 10px;
+    }
+  }
+}

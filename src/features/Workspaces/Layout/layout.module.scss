@@ -1,0 +1,34 @@
+@import '../../../sass/variables';
+
+.wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100vw;
+  .content {
+    position: absolute;
+    left: calc($width-sidebar + $width-sidebar-project);
+    padding: 30px 40px;
+    top: 0;
+    right: 0;
+    overflow: overlay;
+    min-height: 100vh;
+    .no-project {
+      position: absolute;
+      left: 50%;
+      top: 40%;
+      transform: translate(-40%, -50%);
+      text-align: center;
+      .icon-no-project {
+        width: 330px;
+        height: 180px;
+        background-color: transparent;
+        border: none;
+      }
+      p {
+        font-size: 28px;
+        margin-top: 10px;
+      }
+    }
+  }
+}

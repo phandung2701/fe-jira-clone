@@ -1,0 +1,136 @@
+@import '../../../../../sass/variables';
+@import '../../../../../sass/mixins';
+
+.wrapper {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 101;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+}
+.container {
+  width: 800px;
+  padding: 25px 40px 75px;
+  background-color: $white;
+  border-radius: 4px;
+
+  height: fit-content;
+  .form-field {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    label {
+      color: #5e6c84;
+      font-size: 13px;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    input {
+      height: 32px;
+      border-radius: 3px;
+      border: 1px solid rgb(223, 225, 230);
+      color: rgb(23, 43, 77);
+      background: rgb(244, 245, 247);
+      outline: none;
+      font-weight: normal;
+      font-size: 15px;
+      padding-left: 7px;
+      &:focus {
+        border: 1px solid $color-primary;
+      }
+    }
+    i {
+      position: absolute;
+      top: 52%;
+    }
+    p {
+      color: #5e6c84;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+  }
+  .horizontal {
+    margin: 22px 0;
+    border-top: 1px solid rgb(193, 199, 208);
+  }
+  .description {
+    margin-top: 20px;
+
+    .title {
+      font-size: 13px;
+      color: #5e6c84;
+      font-weight: 550;
+      margin-bottom: 5px;
+    }
+  }
+  .input-select {
+    position: relative;
+    display: flex;
+    align-items: center;
+    .createTask-icon {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 5px;
+    }
+    .story {
+      color: green;
+      font-size: 16px;
+    }
+    .task {
+      color: $color-primary;
+      font-size: 16px;
+    }
+    .bug {
+      color: #ff0000d4;
+      font-size: 16px;
+    }
+    input {
+      width: 100%;
+      padding-left: 30px;
+    }
+    img {
+      width: 20px;
+      height: 20px;
+      position: absolute;
+      top: 50%;
+      border-radius: 50%;
+      object-fit: cover;
+      transform: translateY(-50%);
+      left: 8px;
+    }
+  }
+  .btn {
+    display: flex;
+    margin-top: 30px;
+    align-items: center;
+    justify-content: flex-end;
+    p {
+      padding: 7px 12px;
+      font-size: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    p:nth-child(1) {
+      color: $white;
+      background-color: $color-primary;
+      margin-right: 10px;
+      &:hover {
+        background-color: $color-hover;
+      }
+    }
+    p:nth-child(2) {
+      color: #5e6c84;
+      &:hover {
+        background: rgb(220, 220, 222);
+      }
+    }
+  }
+}

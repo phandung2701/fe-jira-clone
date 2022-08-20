@@ -1,0 +1,92 @@
+@import '../../../../../sass/variables';
+@import '../../../../../sass/mixins';
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  margin: 6px;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1), -1px -1px 2px rgba(0, 0, 0, 0.1);
+  &:hover {
+    background-color: #ebecf0;
+  }
+  .title {
+    font-size: 15px;
+    padding-bottom: 11px;
+    line-height: 1.5;
+  }
+  .content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .story {
+      color: green;
+      font-size: 22px;
+    }
+    .task {
+      color: $color-primary;
+      font-size: 25px;
+    }
+    .bug {
+      color: #ff0000d4;
+      font-size: 23px;
+    }
+    .Highest {
+      font-size: 25px;
+      color: #ce323a;
+    }
+    .High {
+      font-size: 25px;
+      color: #e94b4c;
+    }
+    .medium {
+      font-size: 25px;
+      color: #e98237;
+    }
+    .low {
+      font-size: 25px;
+      color: #58a65b;
+    }
+    .lowest {
+      font-size: 25px;
+      color: #5aa75d;
+    }
+    .assignees {
+      display: flex;
+      align-items: center;
+
+      flex-direction: row-reverse;
+      position: relative;
+      img {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        object-fit: cover;
+        right: 0;
+      }
+      img:nth-child(3) {
+        margin-right: -7px;
+      }
+      img:nth-child(2) {
+        margin-right: -7px;
+      }
+      .circle-img {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: $color-primary;
+        color: $white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        margin-right: -9px;
+      }
+    }
+  }
+}

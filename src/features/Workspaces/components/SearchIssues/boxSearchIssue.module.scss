@@ -1,0 +1,113 @@
+@import '../../../../sass/variables';
+@import '../../../../sass/mixins';
+.wrapper {
+  position: fixed;
+  right: 0;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 101;
+  .container {
+    width: 600px;
+    height: 100vh;
+    cursor: pointer;
+    background-color: $white;
+    padding: 35px 50px 35px 35px;
+    position: relative;
+    top: 0;
+    animation: leftToRight 0.3s linear;
+    .box-close {
+      width: 50px;
+      height: 50px;
+      background-color: $white;
+      position: absolute;
+      right: -30px;
+      top: 10px;
+      z-index: 102;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      box-shadow: rgb(0 0 0 / 10%) 0px 5px 10px 0px;
+      cursor: pointer;
+      border: 1px solid rgb(223, 225, 230);
+      &:hover {
+        i {
+          color: $color-primary;
+        }
+      }
+      i {
+        font-size: 30px;
+        color: #5e6c84;
+      }
+    }
+    .input-search {
+      padding: 0px 0px 0px 32px;
+      border-top: none;
+      border-right: none;
+      border-left: none;
+      border-image: initial;
+      border-bottom: 2px solid rgb(0, 82, 204);
+      background: rgb(255, 255, 255);
+      position: relative;
+      input {
+        font-size: 21px;
+        border: none;
+        width: 100%;
+        outline: none;
+      }
+      i {
+        position: absolute;
+        left: 3px;
+        top: 2px;
+        font-size: 21px;
+        color: #5e6c84;
+      }
+    }
+    .recent-issues {
+      margin-top: 30px;
+      .title {
+        font-size: 12px;
+        color: #5e6c84;
+        font-weight: 550;
+      }
+      .list-issues {
+        margin-top: 20px;
+      }
+      .list-issue-item {
+        display: flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 4px;
+        &:hover {
+          background: rgb(235, 236, 240);
+        }
+        .story {
+          color: green;
+          font-size: 25px;
+        }
+        .task {
+          color: $color-primary;
+          font-size: 25px;
+        }
+        .bug {
+          color: #ff0000d4;
+          font-size: 25px;
+        }
+        .content {
+          padding-left: 15px;
+
+          p:nth-child(1) {
+            color: #42526e;
+            font-size: 14px;
+          }
+          p:nth-child(2) {
+            color: #5e6c84;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,77 @@
+@import '../../../../sass/variables';
+
+.wrapper {
+  width: 380px;
+  height: 400px;
+  background-color: $white;
+  padding: 20px;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  h2 {
+    text-align: center;
+    margin-bottom: 40px;
+    margin-top: 10px;
+  }
+  .inputFields {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 15px;
+    label {
+      font-size: 14px;
+
+      font-weight: 600;
+    }
+    input {
+      border: none;
+      outline: none;
+      border-bottom: 1px solid $color-hover;
+      padding: 8px 1px;
+    }
+    span {
+      color: $error;
+      font-size: 13px;
+      margin-top: 5px;
+      font-style: italic;
+    }
+  }
+  .submit {
+    margin-top: 30px;
+    padding: 8px 10px;
+    color: $white;
+    text-align: center;
+    background-color: $color-primary;
+    border-radius: 5px;
+
+    cursor: pointer;
+    &:hover {
+      background-color: $color-hover;
+    }
+  }
+  .error {
+    input {
+      border-bottom: 1px solid $error;
+    }
+    label {
+      color: $error;
+      font-weight: 400;
+    }
+  }
+  .hints {
+    font-size: 14px;
+    margin-top: 40px;
+    text-align: center;
+    span {
+      color: $color-primary;
+      cursor: pointer;
+      text-decoration: underline;
+      &:hover {
+        color: $color-hover;
+      }
+    }
+  }
+}

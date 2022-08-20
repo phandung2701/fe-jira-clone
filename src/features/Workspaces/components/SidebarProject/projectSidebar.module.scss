@@ -1,0 +1,78 @@
+@import '../../../../sass/variables';
+@import '../../../../sass/mixins';
+
+.wrapper {
+  position: fixed;
+  z-index: 99;
+  top: 0px;
+  left: $width-sidebar;
+  height: 100vh;
+  width: $width-sidebar-project;
+  padding: 0px 16px 24px;
+  background: rgb(244, 245, 247);
+  border-right: 1px solid rgb(223, 225, 230);
+  overflow: hidden auto;
+  .project-logo {
+    display: flex;
+    align-items: center;
+    padding: 24px 4px;
+    i {
+      font-size: 40px;
+      color: #e4553a;
+    }
+
+    .project-info {
+      display: flex;
+      flex-direction: column;
+      padding-left: 10px;
+      p:nth-child(1) {
+        font-size: 15px;
+        font-weight: 600;
+        color: #42526e;
+      }
+      p:nth-child(2) {
+        font-size: 13px;
+        color: #5e6c84;
+      }
+    }
+  }
+  .kanban-borad,
+  .project-setting,
+  .project-item {
+    position: relative;
+    width: 100%;
+    padding: 10px 12px;
+    transition: color 0.1s ease 0s;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    color: #172b4d;
+    border-radius: 4px;
+    .icon {
+      margin-right: 15px;
+      font-size: 20px;
+    }
+    span {
+      font-size: 14.7px;
+    }
+    &:hover {
+      background-color: #ebecf0;
+    }
+  }
+  .active {
+    color: $color-primary;
+    background-color: #ebecf0;
+  }
+  .horizontal {
+    margin-top: 17px;
+    border-top: 1px solid rgb(193, 199, 208);
+  }
+  .project-list {
+    margin-top: 17px;
+    p {
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+  }
+}
