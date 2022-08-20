@@ -5,7 +5,7 @@ import styles from './register.module.scss';
 import { useDispatch } from 'react-redux';
 import { register } from '../../../../redux/action/authActions';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -111,8 +111,6 @@ const Register = () => {
 
   return (
     <div className={cx('wrapper')}>
-      <ToastContainer />
-
       <h2>REGISTER</h2>
       <div className={cx('inputFields', error.emailErr && 'error')}>
         <label htmlFor="email">Email:</label>

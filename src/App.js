@@ -15,11 +15,9 @@ import HomeLayout from './features/HomePage/HomeLayout';
 
 function App() {
   const token = useSelector((state) => state.auth.accessToken);
-  const success = useSelector((state) => state.auth.success);
 
   let routes;
-  console.log('token', !token, 'success', success);
-  if (!token && !success) {
+  if (!token) {
     routes = (
       <Routes>
         <Route path="/" element={<HomeLayout />}>

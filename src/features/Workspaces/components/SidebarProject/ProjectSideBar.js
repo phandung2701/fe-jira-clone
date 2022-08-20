@@ -5,35 +5,39 @@ import { FiSettings } from 'react-icons/fi';
 import { CgClapperBoard } from 'react-icons/cg';
 import { AiOutlineProject } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import axiosClient from '../../../../api/axiosClient';
+import { useDispatch, useSelector } from 'react-redux';
 import useAxios from '../../../../hook/useAxios';
+import {
+  projectList,
+  setProjectItem,
+} from '../../../../redux/reducers/projectSlice';
+import { showCreateProject } from '../../../../redux/reducers/modalSlice';
 
 const cx = classNames.bind(styles);
 
-const data = [
-  { id: 1, name: 'project 1' },
-  { id: 2, name: 'project 2' },
-  { id: 3, name: 'project 3' },
-];
-
 const ProjectSideBar = () => {
   const [tab, setTab] = useState(1);
+  const [projectActive, setProjectActive] = useState('');
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.accessToken);
   const project = useSelector((state) => state.project.projectItem);
   const axiosToken = useAxios();
+  /* eslint-disable */
   useEffect(() => {
     const fetchData = async () => {
-      const data = await axiosToken.get('/project', {
+      const projects = await axiosToken.get('/project', {
         headers: {
           authorization: `Bearer ${token}`,
         },
       });
-      console.log(data);
+      dispatch(projectList(projects.data));
     };
     fetchData();
   }, []);
+  const projectLists = useSelector((state) => state.project.projectList);
+
   const handleSetting = () => {
     setTab(2);
     navigate('/project/settings');
@@ -41,6 +45,15 @@ const ProjectSideBar = () => {
   const handleKanban = () => {
     setTab(1);
     navigate('/project/board');
+  };
+  const handleProjectItem = (item) => {
+    dispatch(setProjectItem(item));
+    navigate('/project/board');
+    setProjectActive(item.id);
+    setTab(1);
+  };
+  const handleShowCreateProject = () => {
+    dispatch(showCreateProject());
   };
   return (
     <div className={cx('wrapper')}>
@@ -50,8 +63,8 @@ const ProjectSideBar = () => {
           <div className={cx('project-logo')}>
             <i className="bx bxs-user-rectangle"></i>
             <div className={cx('project-info')}>
-              <p>Singularity 1.0</p>
-              <p>software project</p>
+              <p>{project.name}</p>
+              <p>{project.category}</p>
             </div>
           </div>
           <div
@@ -72,16 +85,24 @@ const ProjectSideBar = () => {
         </>
       ) : null}
       <div className={cx('project-list')}>
-        <p>Project</p>
-        {data.map((project) => (
+        <p className={cx('title')}>Project</p>
+        {projectLists.map((project) => (
           <div
-            className={cx('project-item', tab === 1 && 'active')}
+            className={cx(
+              'project-item',
+              projectActive === project.id && 'active'
+            )}
             key={project.id}
+            onClick={() => handleProjectItem(project)}
           >
             <AiOutlineProject className={cx('icon')} />
             <span>{project.name}</span>
           </div>
         ))}
+        <div className={cx('create-project')} onClick={handleShowCreateProject}>
+          <i className="bx bx-plus"></i>
+          <p>Create Project</p>
+        </div>
       </div>
     </div>
   );

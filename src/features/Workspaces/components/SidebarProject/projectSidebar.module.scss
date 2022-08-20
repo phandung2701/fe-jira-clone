@@ -11,7 +11,7 @@
   padding: 0px 16px 24px;
   background: rgb(244, 245, 247);
   border-right: 1px solid rgb(223, 225, 230);
-  overflow: hidden auto;
+  overflow: hidden;
   .project-logo {
     display: flex;
     align-items: center;
@@ -70,9 +70,29 @@
   }
   .project-list {
     margin-top: 17px;
-    p {
+    position: relative;
+    height: auto;
+    .title {
       margin-bottom: 10px;
       font-size: 12px;
+      font-weight: 600;
+    }
+    .create-project {
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
+      position: fixed;
+      bottom: 0;
+
+      background-color: $color-primary;
+      color: #fff;
+      width: 197px;
+      margin-bottom: 23px;
+      justify-content: center;
+      cursor: pointer;
+      &:hover {
+        background-color: $color-hover;
+      }
     }
   }
 }

@@ -21,6 +21,62 @@
   border-radius: 4px;
 
   height: fit-content;
+  .assignees {
+    font-size: 13px;
+    position: relative;
+    width: 100%;
+    font-weight: 550;
+    margin-top: 30px;
+    .title {
+      color: #5e6c84;
+      font-size: 13px;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    .unassignees {
+      padding: 8px 0;
+      color: #42526e;
+      font-weight: 500;
+    }
+    .assignees-list {
+      display: flex;
+      align-items: center;
+      margin-top: 5px;
+      flex-wrap: wrap;
+      .assignees-item {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+        padding: 6px 12px;
+        background-color: #ebecf0;
+        width: fit-content;
+        border-radius: 5px;
+        margin-right: 10px;
+        img {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+        p {
+          white-space: nowrap;
+        }
+        i {
+          font-size: 16px;
+          padding-left: 4px;
+          cursor: pointer;
+        }
+      }
+      .add-more {
+        background-color: $color-primary;
+        color: #fff;
+        cursor: pointer;
+        &:hover {
+          background-color: $color-hover;
+        }
+      }
+    }
+  }
   .form-field {
     margin-top: 24px;
     display: flex;

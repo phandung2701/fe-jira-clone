@@ -1,17 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames/bind';
 import styles from './header.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { isLogout } from '../../../redux/reducers/authSlice';
+import jwtDecode from 'jwt-decode';
 
 const cx = classNames.bind(styles);
 
 const Header = () => {
+  const [showBoxUser, setShowBoxUser] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const token = useSelector((state) => state.auth.accessToken);
-  const success = useSelector((state) => state.auth.success);
 
   const handleShowForm = (display) => {
     navigate(display);
@@ -41,9 +42,22 @@ const Header = () => {
           <p onClick={() => handleShowForm('/register')}>Register</p>
         </div>
       ) : (
-        <div className={cx('header-user-login')} onClick={handleLogout}>
-          <i className="bx bx-user"></i>
-          <span>user</span>
+        <div className={cx('header-user-login')}>
+          <div
+            className={cx('box')}
+            onClick={() => setShowBoxUser((prev) => !prev)}
+          >
+            <div className={cx('avatar')}>
+              {jwtDecode(token).email.slice(0, 2).toUpperCase()}
+            </div>
+            <span>{jwtDecode(token).email.split('@')[0]}</span>
+          </div>
+          {showBoxUser ? (
+            <div className={cx('box-user')}>
+              <p>Information</p>
+              <p onClick={handleLogout}>Logout</p>
+            </div>
+          ) : null}
         </div>
       )}
     </div>

@@ -1,17 +1,25 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames/bind';
 import styles from './projectForm.module.scss';
 import BoxSearch from '../../../../share/components/BoxSearch/BoxSearch';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserList } from '../../../../api/userRequest';
+import useAxios from '../../../../hook/useAxios';
+import { toast } from 'react-toastify';
+import { getListProject, updateProject } from '../../../../api/projectRequest';
+import { setProjectItem } from '../../../../redux/reducers/projectSlice';
 
 const cx = classNames.bind(styles);
 
 const ProjectForm = (props) => {
   const [show, setShow] = useState(false);
   const [category, setCategory] = useState({});
-  const [ckeditor, setSkeditor] = useState('');
-  const divRef = useRef(null);
+  const [description, setDescription] = useState('');
+  const [projectName, setProjectName] = useState('');
+  const [url, setUrl] = useState('');
+
   const handleShowBox = (e) => {
     e.stopPropagation();
     setShow(true);
@@ -31,54 +39,120 @@ const ProjectForm = (props) => {
       name: 'Software',
     },
   ];
+  const axiosToken = useAxios();
   const handleChangeData = (event, editor) => {
-    setSkeditor(editor.getData());
+    setDescription(editor.getData());
   };
-  useEffect(() => {
-    if (divRef.current) {
-      console.log(ckeditor);
-      divRef.current.innerHTML = ckeditor;
-    }
-  }, [ckeditor]);
+  const dispatch = useDispatch();
 
+  const projectItem = useSelector((state) => state.project.projectItem);
+  /* eslint-disable */
+  useEffect(() => {
+    setProjectName(projectItem.name);
+    setUrl(projectItem.url);
+    const newCategory = data.filter(
+      (e) => e.name.toLowerCase() === projectItem.category.toLowerCase()
+    );
+
+    setCategory(newCategory[0]);
+    setDescription(projectItem.description);
+    const user = getUserList(axiosToken);
+    user.then((res) => console.log(res));
+  }, []);
+
+  const handleChangeNameProject = (e) => {
+    setProjectName(e.target.value);
+  };
+  const onUpdateProject = async () => {
+    if (!projectName) {
+      toast.error('update failed, task name cannot be blank', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+    } else {
+      const projectData = {
+        name: projectName,
+        category: category.name,
+        description: description,
+        idUser: projectItem.idUser,
+        url: url,
+      };
+      try {
+        const update = await updateProject(
+          axiosToken,
+          projectItem.id,
+          projectData
+        );
+
+        dispatch(setProjectItem(update));
+        toast.success('update successfully', {
+          position: 'top-right',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+        });
+        await getListProject(axiosToken, dispatch);
+      } catch (err) {
+        toast.error('update failed', {
+          position: 'top-right',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    }
+  };
   return (
     <div className={cx('wrapper')}>
       <div className={cx('container')}>
         <div className={cx('path')}>
           <p>
-            <span>Projects</span> / <span>singularity 1.0</span> /{' '}
+            <span>Projects</span> / <span>{projectItem.name}</span> / Project
+            Details
           </p>
         </div>
         <h3 className={cx('title')}>Project Detail</h3>
         <div className={cx('form-field')}>
           <label htmlFor="name">Name</label>
-          <input type="text" name="name" id="name" />
+          <input
+            type="text"
+            name="name"
+            id="name"
+            value={projectName}
+            onChange={handleChangeNameProject}
+          />
         </div>
         <div className={cx('form-field')}>
           <label htmlFor="url">URL</label>
-          <input type="text" name="url" id="url" />
+          <input
+            type="text"
+            name="url"
+            id="url"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
         </div>
         <div className={cx('description')}>
           <p className={cx('title')}>Description</p>
           <CKEditor
             editor={ClassicEditor}
-            data="<p>Hello from CKEditor 5!</p>"
-            onReady={(editor) => {
-              // You can store the "editor" and use when it is needed.
-              console.log('Editor is ready to use!', editor);
-            }}
+            data={description}
             onChange={handleChangeData}
-            onBlur={(event, editor) => {
-              console.log('Blur.', editor);
-            }}
-            onFocus={(event, editor) => {
-              console.log('Focus.', editor);
-            }}
           />
           <p className={cx('content')}>
             Describe the project in as much detail as you'd like.
           </p>
-          <div ref={divRef}></div>
         </div>
         <div className={cx('form-field')}>
           <label htmlFor="category">Project category</label>
@@ -99,7 +173,9 @@ const ProjectForm = (props) => {
             data={data}
           />
         </div>
-        <button className={cx('btn-save')}>Save Changes</button>
+        <button className={cx('btn-save')} onClick={onUpdateProject}>
+          Save Changes
+        </button>
       </div>
     </div>
   );

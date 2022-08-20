@@ -10,80 +10,87 @@ import image1 from '../../../../../assets/images/image1.jpg';
 import image2 from '../../../../../assets/images/image2.jpg';
 
 const cx = classNames.bind(styles);
-
+const typetask = [
+  {
+    id: 1,
+    name: 'task',
+    icon: 'bx bxs-checkbox-checked',
+  },
+  {
+    id: 2,
+    name: 'bug',
+    icon: 'bx bxs-message-error',
+  },
+  {
+    id: 3,
+    name: 'story',
+    icon: 'bx bxs-bookmark',
+  },
+];
+const avatar = [
+  {
+    id: 1,
+    name: 'name 1',
+    image: image1,
+  },
+  {
+    id: 2,
+    name: 'name 2',
+    image: image2,
+  },
+];
+const priorityData = [
+  {
+    id: 1,
+    name: 'Highest',
+    icon: 'bx bx-up-arrow-alt',
+    color: '#ce323a',
+  },
+  {
+    id: 2,
+    name: 'High',
+    icon: 'bx bx-up-arrow-alt',
+    color: '#e94b4c',
+  },
+  {
+    id: 3,
+    name: 'medium',
+    icon: 'bx bx-up-arrow-alt',
+    color: '#e98237',
+  },
+  {
+    id: 4,
+    name: 'low',
+    icon: 'bx bx-down-arrow-alt',
+    color: '#58a65b',
+  },
+  {
+    id: 5,
+    name: 'lowest',
+    icon: 'bx bx-down-arrow-alt',
+    color: '#5aa75d',
+  },
+];
 const CreateTask = () => {
   const [showType, setShowType] = useState(false);
   const [showReporter, setShowReporter] = useState(false);
   const [showPriority, setShowPriority] = useState(false);
+  const [showAssignees, setShowAssignees] = useState(false);
 
   const createTask = useSelector((state) => state.modal.createTask);
+  const projectItem = useSelector((state) => state.project.projectItem);
+
   const closeRef = useRef(null);
   const btnCloseRef = useRef(null);
-  const [typeIssue, setTypeIssue] = useState({});
-  const [reporter, setReporter] = useState({});
-  const [priority, setPriority] = useState({});
 
-  const typetask = [
-    {
-      id: 1,
-      name: 'task',
-      icon: 'bx bxs-checkbox-checked',
-    },
-    {
-      id: 2,
-      name: 'bug',
-      icon: 'bx bxs-message-error',
-    },
-    {
-      id: 3,
-      name: 'story',
-      icon: 'bx bxs-bookmark',
-    },
-  ];
-  const avatar = [
-    {
-      id: 1,
-      name: 'name 1',
-      image: image1,
-    },
-    {
-      id: 2,
-      name: 'name 2',
-      image: image2,
-    },
-  ];
-  const priorityData = [
-    {
-      id: 1,
-      name: 'Highest',
-      icon: 'bx bx-up-arrow-alt',
-      color: '#ce323a',
-    },
-    {
-      id: 2,
-      name: 'High',
-      icon: 'bx bx-up-arrow-alt',
-      color: '#e94b4c',
-    },
-    {
-      id: 3,
-      name: 'medium',
-      icon: 'bx bx-up-arrow-alt',
-      color: '#e98237',
-    },
-    {
-      id: 4,
-      name: 'low',
-      icon: 'bx bx-down-arrow-alt',
-      color: '#58a65b',
-    },
-    {
-      id: 5,
-      name: 'lowest',
-      icon: 'bx bx-down-arrow-alt',
-      color: '#5aa75d',
-    },
-  ];
+  const [typeIssue, setTypeIssue] = useState(typetask[0]);
+  const [reporter, setReporter] = useState({});
+  const [assignees, setAssignees] = useState([]);
+
+  const [priority, setPriority] = useState(priorityData[2]);
+  const [nameTask, setNameTask] = useState('');
+  const [description, setDescription] = useState('');
+
   const handleShowBox = (e, params) => {
     e.stopPropagation();
     switch (params) {
@@ -105,6 +112,9 @@ const CreateTask = () => {
     } else if (btnCloseRef.current && btnCloseRef.current.contains(e.target)) {
       dispatch(closeCreateTask());
     }
+  };
+  const handleDeleteAssignees = (item) => {
+    setAssignees(assignees.splice(assignees.indexOf(item), 1));
   };
 
   return (
@@ -149,28 +159,21 @@ const CreateTask = () => {
             <div className={cx('horizontal')}></div>
             <div className={cx('form-field')}>
               <label htmlFor="name">Short Summary</label>
-              <input type="text" name="name" id="name" />
+              <input
+                type="text"
+                name="name"
+                id="name"
+                value={nameTask}
+                onChange={(e) => setNameTask(e.target.value)}
+              />
               <p>Concisely summarize the issue in one or two sentences.</p>
             </div>
             <div className={cx('description')}>
               <p className={cx('title')}>Description</p>
               <CKEditor
                 editor={ClassicEditor}
-                data="<p>Hello from CKEditor 5!</p>"
-                onReady={(editor) => {
-                  // You can store the "editor" and use when it is needed.
-                  console.log('Editor is ready to use!', editor);
-                }}
-                onChange={(event, editor) => {
-                  const data = editor.getData();
-                  console.log({ event, editor, data });
-                }}
-                onBlur={(event, editor) => {
-                  console.log('Blur.', editor);
-                }}
-                onFocus={(event, editor) => {
-                  console.log('Focus.', editor);
-                }}
+                data={description}
+                onChange={(event, editor) => setDescription(editor.getData())}
               />
             </div>
             <div className={cx('form-field')}>
@@ -199,9 +202,45 @@ const CreateTask = () => {
                 data={avatar}
               />
             </div>
-            <div className={cx('form-field')}>
-              <label htmlFor="name">Assignees</label>
-              <input type="text" name="name" id="name" />
+            <div className={cx('assignees')}>
+              <p className={cx('title')}>Assignees</p>
+              <div>
+                {assignees.length <= 0 ? (
+                  <p
+                    className={cx('unassignees')}
+                    onClick={() => setShowAssignees(true)}
+                  >
+                    Unassignees
+                  </p>
+                ) : (
+                  <div className={cx('assignees-list')}>
+                    {assignees.map((i) => (
+                      <div key={i.id} className={cx('assignees-item')}>
+                        <img src={i.image} alt="error" />
+                        <p>{i.name}</p>
+                        <i
+                          className="bx bx-x"
+                          onClick={() => handleDeleteAssignees(i)}
+                        ></i>
+                      </div>
+                    ))}
+                    <div
+                      className={cx('assignees-item', 'add-more')}
+                      onClick={() => setShowAssignees(true)}
+                    >
+                      <i className="bx bx-plus"></i>
+                      <p>Add more</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <BoxSearch
+                setDataChange={setAssignees}
+                setShow={setShowAssignees}
+                dataChange={assignees}
+                show={showAssignees}
+                data={avatar}
+              />
             </div>
             <div className={cx('form-field')}>
               <label htmlFor="priority">Priority</label>

@@ -7,7 +7,14 @@ const projectSlice = createSlice({
     projectItem: {},
     projectList: [],
   },
-  reducers: {},
+  reducers: {
+    projectList: (state, action) => {
+      return { ...state, projectList: action.payload };
+    },
+    setProjectItem: (state, action) => {
+      return { ...state, projectItem: action.payload };
+    },
+  },
   extraReducers: {
     [getListProject.pending]: (state) => state,
     [getListProject.fulfilled]: (state, action) => ({
@@ -19,3 +26,4 @@ const projectSlice = createSlice({
 });
 
 export const { reducer: projectReducer } = projectSlice;
+export const { projectList, setProjectItem } = projectSlice.actions;

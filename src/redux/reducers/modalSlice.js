@@ -6,6 +6,7 @@ const modalSlice = createSlice({
     modalIssues: false,
     createTask: false,
     taskDetail: false,
+    createProject: false,
   },
   reducers: {
     showModalIssues: (state) => {
@@ -26,6 +27,12 @@ const modalSlice = createSlice({
     closeTaskDetail: (state) => {
       return { ...state, taskDetail: false };
     },
+    showCreateProject: (state) => {
+      return { ...state, createProject: true };
+    },
+    closeCreateProject: (state) => {
+      return { ...state, createProject: false };
+    },
   },
 });
 
@@ -38,4 +45,6 @@ export const {
   closeCreateTask,
   showTaskDetail,
   closeTaskDetail,
+  showCreateProject,
+  closeCreateProject,
 } = modalSlice.actions;

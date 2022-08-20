@@ -4,8 +4,8 @@ import { login, register, verifyAccount } from '../action/authActions';
 const AuthSlice = createSlice({
   name: 'auth',
   initialState: {
-    user: {},
-    success: '',
+    userList: [],
+    myInfo: {},
     accessToken: '',
     refreshToken: '',
     error: '',

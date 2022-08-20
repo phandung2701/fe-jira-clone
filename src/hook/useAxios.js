@@ -12,12 +12,13 @@ const useAxios = () => {
     baseURL: process.env.REACT_APP_API_URL,
     headers: {
       'content-type': 'application/json',
+      authorization: `Bearer ${accessToken}`,
     },
 
     credentials: 'include',
     paramsSerializer: (params) => queryString.stringify(params),
   });
-  console.log(refreshToken);
+
   const HandleRefreshToken = async () => {
     try {
       const res = await axios.post(
@@ -27,7 +28,7 @@ const useAxios = () => {
           data: refreshToken,
         }
       );
-      console.log(res);
+
       return res.data;
     } catch (err) {
       console.log(err);

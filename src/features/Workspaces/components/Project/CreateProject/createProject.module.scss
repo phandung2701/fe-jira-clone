@@ -1,0 +1,99 @@
+@import '../../../../../sass/variables';
+@import '../../../../../sass/mixins';
+
+.wrapper {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 101;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+  .container {
+    height: fit-content;
+    width: 800px;
+    padding: 25px 40px 75px;
+    background-color: $white;
+    border-radius: 4px;
+    position: relative;
+
+    height: fit-content;
+    .close {
+      color: #5e6c84;
+      position: absolute;
+      right: 20px;
+      font-size: 30px;
+      cursor: pointer;
+    }
+    .title {
+      margin-top: 10px;
+      font-size: 24px;
+      color: #172b4d;
+      margin-bottom: 10px;
+    }
+    .form-field {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      label {
+        color: #5e6c84;
+        font-size: 13px;
+        margin-bottom: 5px;
+        font-weight: 550;
+      }
+      input {
+        height: 32px;
+        border-radius: 3px;
+        border: 1px solid rgb(223, 225, 230);
+        color: rgb(23, 43, 77);
+        background: rgb(244, 245, 247);
+        outline: none;
+        font-weight: normal;
+        font-size: 15px;
+        padding-left: 7px;
+        &:focus {
+          border: 1px solid $color-primary;
+        }
+      }
+      i {
+        position: absolute;
+        right: 10px;
+        top: 52%;
+      }
+    }
+    .description {
+      margin: 30px 0;
+
+      .title {
+        font-size: 13px;
+        color: #5e6c84;
+        font-weight: 550;
+        margin-bottom: 5px;
+      }
+      .content {
+        font-size: 12px;
+        color: #5e6c84;
+        margin-bottom: 5px;
+        margin-top: 8px;
+      }
+    }
+
+    .btn-save {
+      border: none;
+      padding: 8px 12px;
+      background-color: $color-primary;
+      border-radius: 5px;
+      color: $white;
+      margin-top: 30px;
+      cursor: pointer;
+      &:hover {
+        background-color: $color-hover;
+      }
+    }
+  }
+}
