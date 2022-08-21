@@ -24,15 +24,15 @@
     align-items: center;
     justify-content: space-between;
 
-    .story {
+    .Story {
       color: green;
       font-size: 22px;
     }
-    .task {
+    .Task {
       color: $color-primary;
       font-size: 25px;
     }
-    .bug {
+    .Bug {
       color: #ff0000d4;
       font-size: 23px;
     }
@@ -44,15 +44,15 @@
       font-size: 25px;
       color: #e94b4c;
     }
-    .medium {
+    .Medium {
       font-size: 25px;
       color: #e98237;
     }
-    .low {
+    .Low {
       font-size: 25px;
       color: #58a65b;
     }
-    .lowest {
+    .Lowest {
       font-size: 25px;
       color: #5aa75d;
     }

@@ -1,4 +1,4 @@
-import React, { Fragment, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import classNames from 'classnames/bind';
 import styles from './createTask.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,37 +8,30 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import image1 from '../../../../../assets/images/image1.jpg';
 import image2 from '../../../../../assets/images/image2.jpg';
+import { toast } from 'react-toastify';
+import jwtDecode from 'jwt-decode';
+import useAxios from '../../../../../hook/useAxios';
+import { createTaskRequest, getListTask } from '../../../../../api/taskRequest';
 
 const cx = classNames.bind(styles);
 const typetask = [
   {
     id: 1,
-    name: 'task',
+    name: 'Task',
     icon: 'bx bxs-checkbox-checked',
   },
   {
     id: 2,
-    name: 'bug',
+    name: 'Bug',
     icon: 'bx bxs-message-error',
   },
   {
     id: 3,
-    name: 'story',
+    name: 'Story',
     icon: 'bx bxs-bookmark',
   },
 ];
-const avatar = [
-  {
-    id: 1,
-    name: 'name 1',
-    image: image1,
-  },
-  {
-    id: 2,
-    name: 'name 2',
-    image: image2,
-  },
-];
+
 const priorityData = [
   {
     id: 1,
@@ -54,31 +47,36 @@ const priorityData = [
   },
   {
     id: 3,
-    name: 'medium',
+    name: 'Medium',
     icon: 'bx bx-up-arrow-alt',
     color: '#e98237',
   },
   {
     id: 4,
-    name: 'low',
+    name: 'Low',
     icon: 'bx bx-down-arrow-alt',
     color: '#58a65b',
   },
   {
     id: 5,
-    name: 'lowest',
+    name: 'Lowest',
     icon: 'bx bx-down-arrow-alt',
     color: '#5aa75d',
   },
 ];
 const CreateTask = () => {
+  const dispatch = useDispatch();
+  const axiosToken = useAxios();
+
+  const createTask = useSelector((state) => state.modal.createTask);
+  const projectItem = useSelector((state) => state.project.projectItem);
+  const userList = useSelector((state) => state.auth.userList);
+  const token = useSelector((state) => state.auth.accessToken);
+
   const [showType, setShowType] = useState(false);
   const [showReporter, setShowReporter] = useState(false);
   const [showPriority, setShowPriority] = useState(false);
   const [showAssignees, setShowAssignees] = useState(false);
-
-  const createTask = useSelector((state) => state.modal.createTask);
-  const projectItem = useSelector((state) => state.project.projectItem);
 
   const closeRef = useRef(null);
   const btnCloseRef = useRef(null);
@@ -86,7 +84,6 @@ const CreateTask = () => {
   const [typeIssue, setTypeIssue] = useState(typetask[0]);
   const [reporter, setReporter] = useState({});
   const [assignees, setAssignees] = useState([]);
-
   const [priority, setPriority] = useState(priorityData[2]);
   const [nameTask, setNameTask] = useState('');
   const [description, setDescription] = useState('');
@@ -104,8 +101,12 @@ const CreateTask = () => {
         return;
     }
   };
-  const dispatch = useDispatch();
-
+  useEffect(() => {
+    if (userList) {
+      const meInfo = userList.filter((user) => user.id === jwtDecode(token).id);
+      setReporter(meInfo[0]);
+    }
+  }, []);
   const handleCloseCreateTask = (e) => {
     if (closeRef.current && !closeRef.current.contains(e.target)) {
       dispatch(closeCreateTask());
@@ -114,7 +115,63 @@ const CreateTask = () => {
     }
   };
   const handleDeleteAssignees = (item) => {
-    setAssignees(assignees.splice(assignees.indexOf(item), 1));
+    setAssignees(assignees.filter((i) => i.id !== item.id));
+  };
+
+  const onCreateTask = async () => {
+    if (Object.keys(projectItem).length === 0) {
+      toast.error('Create task failed, Please select the project first', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+    if (!nameTask) {
+      toast.error('Create task failed,  task name cannot be blank', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+    const newData = {
+      idProject: projectItem.id,
+      title: nameTask,
+      description: description,
+      type: typeIssue.name,
+      priority: priority.name,
+      reporter: reporter.id,
+      assignees: assignees.reduce((acc, cur) => {
+        return [...acc, cur.id];
+      }, []),
+    };
+    try {
+      const task = await createTaskRequest(axiosToken, newData);
+      console.log(task);
+      toast.success('Create task successfully', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+      console.log(newData);
+      await getListTask(axiosToken, projectItem.id, dispatch);
+      dispatch(closeCreateTask());
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -179,12 +236,12 @@ const CreateTask = () => {
             <div className={cx('form-field')}>
               <label htmlFor="reporter">Reporter</label>
               <div className={cx('input-select')}>
-                {avatar
-                  .filter((item) => item.name === reporter.name)
-                  .map((img) => (
-                    <img key={img.id} src={img.image} alt={'error'} />
-                  ))}
-
+                {Object.keys(reporter).length > 0 && (
+                  <i
+                    className={`${reporter.icon} ${cx('icon-reporter')}`}
+                    style={{ color: `${reporter.color}` }}
+                  ></i>
+                )}
                 <input
                   type="text"
                   name="reporter"
@@ -199,7 +256,7 @@ const CreateTask = () => {
                 setDataChange={setReporter}
                 setShow={setShowReporter}
                 show={showReporter}
-                data={avatar}
+                data={userList}
               />
             </div>
             <div className={cx('assignees')}>
@@ -216,7 +273,10 @@ const CreateTask = () => {
                   <div className={cx('assignees-list')}>
                     {assignees.map((i) => (
                       <div key={i.id} className={cx('assignees-item')}>
-                        <img src={i.image} alt="error" />
+                        <i
+                          className={i.icon}
+                          style={{ color: `${i.color}` }}
+                        ></i>
                         <p>{i.name}</p>
                         <i
                           className="bx bx-x"
@@ -239,7 +299,7 @@ const CreateTask = () => {
                 setShow={setShowAssignees}
                 dataChange={assignees}
                 show={showAssignees}
-                data={avatar}
+                data={userList}
               />
             </div>
             <div className={cx('form-field')}>
@@ -278,7 +338,7 @@ const CreateTask = () => {
             </div>
 
             <div className={cx('btn')}>
-              <p>Create task</p>
+              <p onClick={onCreateTask}>Create task</p>
               <p ref={btnCloseRef}>Cancel</p>
             </div>
           </div>

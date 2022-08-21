@@ -13,10 +13,11 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const token = useSelector((state) => state.auth.accessToken);
-
+  const useList = useSelector((state) => state.auth.userList);
   const handleShowForm = (display) => {
     navigate(display);
   };
+
   const handleLogout = () => {
     dispatch(isLogout(''));
   };
@@ -43,15 +44,26 @@ const Header = () => {
         </div>
       ) : (
         <div className={cx('header-user-login')}>
-          <div
-            className={cx('box')}
-            onClick={() => setShowBoxUser((prev) => !prev)}
-          >
-            <div className={cx('avatar')}>
-              {jwtDecode(token).email.slice(0, 2).toUpperCase()}
-            </div>
-            <span>{jwtDecode(token).email.split('@')[0]}</span>
-          </div>
+          {useList &&
+            useList.map((user, index) => {
+              if (user.id === jwtDecode(token).id) {
+                return (
+                  <div
+                    className={cx('box')}
+                    key={user.id}
+                    onClick={() => setShowBoxUser((prev) => !prev)}
+                  >
+                    <i
+                      className={`${user.icon} }`}
+                      style={{ color: `${user.color}` }}
+                    ></i>
+                    <span>{user.name}</span>
+                  </div>
+                );
+              }
+              return '';
+            })}
+
           {showBoxUser ? (
             <div className={cx('box-user')}>
               <p>Information</p>

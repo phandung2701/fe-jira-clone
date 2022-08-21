@@ -20,6 +20,8 @@ function App() {
   if (!token) {
     routes = (
       <Routes>
+        <Route path="/" element={<Navigate to={'/home'} />} />
+
         <Route path="/" element={<HomeLayout />}>
           <Route path="home" element={<Home />} />
           <Route path="login" element={<Login />} />

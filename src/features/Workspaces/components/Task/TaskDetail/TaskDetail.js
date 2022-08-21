@@ -4,32 +4,34 @@ import styles from './taskDetail.module.scss';
 import { useSelector, useDispatch } from 'react-redux';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import image1 from '../../../../../assets/images/image1.jpg';
-import image2 from '../../../../../assets/images/image2.jpg';
 
 import { FiSend, FiLink } from 'react-icons/fi';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import { FcAlarmClock } from 'react-icons/fc';
 import { MdKeyboardArrowDown } from 'react-icons/md';
 import BoxSearch from '../../../../../share/components/BoxSearch/BoxSearch';
-
 import { closeTaskDetail } from '../../../../../redux/reducers/modalSlice';
+import jwtDecode from 'jwt-decode';
+import { getListTask, updateTask } from '../../../../../api/taskRequest';
+import useAxios from '../../../../../hook/useAxios';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
+
 const typetask = [
   {
     id: 1,
-    name: 'task',
+    name: 'Task',
     icon: 'bx bxs-checkbox-checked',
   },
   {
     id: 2,
-    name: 'bug',
+    name: 'Bug',
     icon: 'bx bxs-message-error',
   },
   {
     id: 3,
-    name: 'story',
+    name: 'Story',
     icon: 'bx bxs-bookmark',
   },
 ];
@@ -41,7 +43,7 @@ const statusList = [
   },
   {
     id: 2,
-    name: 'SELECTED FOR DEVELOPMENT ',
+    name: 'SELECTED FOR DEVELOPMENT',
     color: '#dfe1e6',
   },
   {
@@ -55,18 +57,7 @@ const statusList = [
     color: '#0b875b',
   },
 ];
-const avatar = [
-  {
-    id: 1,
-    name: 'name 1',
-    image: image1,
-  },
-  {
-    id: 2,
-    name: 'name 2',
-    image: image2,
-  },
-];
+
 const priorityData = [
   {
     id: 1,
@@ -99,9 +90,14 @@ const priorityData = [
     color: '#5aa75d',
   },
 ];
-const html = `<p>Before you start work on an issue, you can set a time or other type of estimate to calculate how much work you believe it'll take to resolve it. Once you've started to work on a specific issue, log time to keep a record of it.</p><p>&nbsp;</p><ul><li>Open the issue and select&nbsp;••• &gt;&nbsp;Time tracking</li><li>Fill in the<strong>&nbsp;Time Spent</strong>&nbsp;field</li><li>Fill in the <strong>Time Remaining</strong> field and click Save</li></ul><p>&nbsp;</p><h3>That's it!</h3><h2>💯💯</h2>`;
-//const html = '';
+
 const TaskDetail = () => {
+  const taskDetail = useSelector((state) => state.task.taskDetail);
+  const userList = useSelector((state) => state.auth.userList);
+  const token = useSelector((state) => state.auth.accessToken);
+
+  const axiosToken = useAxios();
+
   const [showType, setShowType] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
   const [showAssignees, setShowAssignees] = useState(false);
@@ -112,14 +108,21 @@ const TaskDetail = () => {
   const [status, setStatus] = useState(statusList[0]);
   const [assignees, setAssignees] = useState([]);
   const [priority, setPriority] = useState(priorityData[3]);
-  const [reporter, setReporter] = useState(avatar[0]);
+  const [reporter, setReporter] = useState(
+    userList.filter((item) => item.id === taskDetail.reporter)[0]
+  );
+  console.log(userList.filter((item) => item.id === jwtDecode(token).id)[0]);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState();
 
   const [skeditor, setSkeditor] = useState(false);
   const [boxComment, setBoxComment] = useState(false);
+  console.log(taskDetail);
 
   const desRef = useRef(null);
 
-  const taskDetail = useSelector((state) => state.modal.taskDetail);
+  const showTaskDetail = useSelector((state) => state.modal.taskDetail);
+
   const dispatch = useDispatch();
   const handleShowType = () => {
     setShowType(true);
@@ -127,22 +130,158 @@ const TaskDetail = () => {
   const handleCloseTaskDetail = () => {
     dispatch(closeTaskDetail());
   };
-
   useEffect(() => {
     if (desRef.current) {
-      desRef.current.innerHTML = html;
+      desRef.current.innerHTML = taskDetail.description;
     }
-  });
-  const handleSaveDesc = () => {
+  }, [taskDetail, description, skeditor]);
+
+  useEffect(() => {
+    setTitle(taskDetail.title);
+    setDescription(taskDetail.description);
+    const status = statusList.filter((item) => item.name === taskDetail.status);
+    const type = typetask.filter((item) => item.name === taskDetail.type);
+    const reporter = userList.filter((item) => item.id === taskDetail.reporter);
+    const assignees = userList.filter((item) =>
+      taskDetail.assignees.includes(item.id)
+    );
+    setStatus(status[0]);
+    setTypeIssue(type[0]);
+    setReporter(reporter[0]);
+    setAssignees(assignees);
+  }, [taskDetail]);
+  const handleUpdateTaskDetail = async () => {
+    try {
+      console.log('ok');
+      await updateTask(
+        axiosToken,
+        taskDetail.id,
+        {
+          status: status.name,
+          assignees: assignees.reduce((acc, cur) => {
+            return [...acc, cur.id];
+          }, []),
+          reporter: reporter.id,
+          priority: priority.name,
+        },
+        dispatch
+      );
+
+      await getListTask(axiosToken, taskDetail.idProject, dispatch);
+      toast.success('Saved !', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+    } catch (err) {
+      console.log(err);
+      toast.error('update failed', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  };
+
+  const handleSaveDesc = async () => {
     setSkeditor(false);
+    try {
+      await updateTask(
+        axiosToken,
+        taskDetail.id,
+        { description: description },
+        dispatch
+      );
+
+      await getListTask(axiosToken, taskDetail.idProject, dispatch);
+      toast.success('Saved !', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+    } catch (err) {
+      console.log(err);
+      toast.error('update failed', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   };
   const handleSaveComment = () => {};
-  const handleDeleteAssignees = (item) => {
-    setAssignees(assignees.splice(assignees.indexOf(item), 1));
+  const handleChangeTitle = async (e) => {
+    setTitle(e.target.value);
   };
+  const handleUpdateTask = async () => {
+    if (!title) {
+      toast.error('Create task failed,  task name cannot be blank', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+      setTitle(taskDetail.title);
+      return;
+    } else {
+      try {
+        const a = await updateTask(
+          axiosToken,
+          taskDetail.id,
+          { title: title },
+          dispatch
+        );
+        console.log({ title: title });
+        await getListTask(axiosToken, taskDetail.idProject, dispatch);
+        toast.success('Saved !', {
+          position: 'top-right',
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+        });
+      } catch (err) {
+        console.log(err);
+        toast.error('update failed', {
+          position: 'top-right',
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    }
+  };
+
+  const handleDeleteAssignees = (item) => {
+    setAssignees(assignees.filter((i) => i.id !== item.id));
+  };
+  console.log(!reporter);
   return (
     <Fragment>
-      {taskDetail ? (
+      {showTaskDetail ? (
         <div className={cx('wrapper')}>
           <div className={cx('container')}>
             <div className={cx('header')}>
@@ -154,12 +293,12 @@ const TaskDetail = () => {
                       <i
                         key={type.id}
                         className={`${type.icon} ${cx(
-                          type.name,
+                          type.name || '',
                           'createTask-icon'
                         )}`}
                       ></i>
                     ))}
-                  <p>story-66666</p>
+                  <p>{`${typeIssue.name} - ${taskDetail.id}`}</p>
                 </div>
 
                 <BoxSearch
@@ -193,9 +332,9 @@ const TaskDetail = () => {
                     type="text"
                     name="title"
                     id={cx('title')}
-                    value={
-                      'Each issue can be assigned priority from lowest to highest.'
-                    }
+                    value={title}
+                    onChange={handleChangeTitle}
+                    onBlur={handleUpdateTask}
                   />
                 </div>
                 <div className={cx('description')}>
@@ -205,17 +344,10 @@ const TaskDetail = () => {
                       <>
                         <CKEditor
                           editor={ClassicEditor}
-                          data={html}
-                          onReady={(editor) => {
-                            // You can store the "editor" and use when it is needed.
-                            console.log('Editor is ready to use!', editor);
-                          }}
-                          onBlur={(event, editor) => {
-                            console.log('Blur.', editor);
-                          }}
-                          onFocus={(event, editor) => {
-                            console.log('Focus.', editor);
-                          }}
+                          data={description}
+                          onChange={(event, editor) =>
+                            setDescription(editor.getData())
+                          }
                         />
                         <div className={cx('btn-desc')}>
                           <button onClick={handleSaveDesc}>Save</button>
@@ -226,18 +358,18 @@ const TaskDetail = () => {
                       </>
                     ) : (
                       <>
-                        {html ? (
-                          <div
-                            ref={desRef}
-                            onClick={() => setSkeditor(true)}
-                          ></div>
-                        ) : (
+                        {!description ? (
                           <p
                             className={cx('add-desc')}
                             onClick={() => setSkeditor(true)}
                           >
                             Add a description ...
                           </p>
+                        ) : (
+                          <div
+                            ref={desRef}
+                            onClick={() => setSkeditor(true)}
+                          ></div>
                         )}
                       </>
                     )}
@@ -246,7 +378,17 @@ const TaskDetail = () => {
                 <div className={cx('comment')}>
                   <p className={cx('title')}>Comment</p>
                   <div className={cx('input-comment-box')}>
-                    <img src={image1} alt="error" />
+                    {userList.map((user) => {
+                      if (user.id === jwtDecode(token).id) {
+                        return (
+                          <i
+                            className={user.icon}
+                            style={{ color: `${user.color}` }}
+                          ></i>
+                        );
+                      }
+                      return '';
+                    })}
                     {boxComment ? (
                       <div className={cx('box-comment-1')}>
                         <textarea
@@ -275,27 +417,38 @@ const TaskDetail = () => {
                   </div>
                 </div>
                 <div className={cx('list-comment')}>
-                  <div className={cx('comment-item')}>
-                    <img src={image1} alt="error" />
-                    <div>
-                      <div className={cx('name')}>
-                        <p>
-                          <strong>name1</strong>
-                        </p>
-                        <p className={cx('time')}>4 days ago</p>
-                      </div>
-                      <div className={cx('content')}>
-                        <p>
-                          In the twilight rain these brilliant-hued hibiscus - A
-                          lovely sunset.
-                        </p>
-                      </div>
-                      <div className={cx('btn')}>
-                        <p>Edit</p>
-                        <p>Delete</p>
-                      </div>
-                    </div>
-                  </div>
+                  {userList.length > 0 &&
+                    userList.map((user) => {
+                      if (user.id === jwtDecode(token).id) {
+                        return (
+                          <div className={cx('comment-item')}>
+                            <i
+                              className={user.icon}
+                              style={{ color: `${user.color}` }}
+                            ></i>
+                            <div>
+                              <div className={cx('name')}>
+                                <p>
+                                  <strong>{user.name}</strong>
+                                </p>
+                                <p className={cx('time')}>4 days ago</p>
+                              </div>
+                              <div className={cx('content')}>
+                                <p>
+                                  In the twilight rain these brilliant-hued
+                                  hibiscus - A lovely sunset.
+                                </p>
+                              </div>
+                              <div className={cx('btn')}>
+                                <p>Edit</p>
+                                <p>Delete</p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return '';
+                    })}
                 </div>
               </div>
               <div className={cx('main-right')}>
@@ -317,7 +470,7 @@ const TaskDetail = () => {
                   />
                 </div>
                 <div className={cx('assignees')}>
-                  <p className={cx('title')}>ASSIGNEES</p>
+                  <p className={cx('title')}>Assignees</p>
                   <div>
                     {assignees.length <= 0 ? (
                       <p
@@ -330,7 +483,10 @@ const TaskDetail = () => {
                       <div className={cx('assignees-list')}>
                         {assignees.map((i) => (
                           <div key={i.id} className={cx('assignees-item')}>
-                            <img src={i.image} alt="error" />
+                            <i
+                              className={i.icon}
+                              style={{ color: `${i.color}` }}
+                            ></i>
                             <p>{i.name}</p>
                             <i
                               className="bx bx-x"
@@ -353,7 +509,7 @@ const TaskDetail = () => {
                     setShow={setShowAssignees}
                     dataChange={assignees}
                     show={showAssignees}
-                    data={avatar}
+                    data={userList}
                   />
                 </div>
                 <div className={cx('reporter')}>
@@ -362,15 +518,19 @@ const TaskDetail = () => {
                     className={cx('reporter-box')}
                     onClick={() => setShowReporter(true)}
                   >
-                    <img src={reporter.image} alt="err" />
-                    <p>{reporter.name}</p>
+                    {!reporter ? null : (
+                      <i
+                        className={`${reporter.icon} ${cx('icon-reporter')}`}
+                        style={{ color: `${reporter.color}` }}
+                      ></i>
+                    )}
+                    {!reporter ? null : <p>{reporter.name}</p>}
                   </div>
                   <BoxSearch
                     setDataChange={setReporter}
                     setShow={setShowReporter}
                     show={showReporter}
-                    data={avatar}
-                    close={false}
+                    data={userList}
                   />
                 </div>
                 <div className={cx('priority')}>

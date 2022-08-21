@@ -3,18 +3,27 @@ import classNames from 'classnames/bind';
 import styles from './kanbanBoard.module.scss';
 import CardTask from '../Task/CardTask/CardTask';
 import image1 from '../../../../assets/images/image1.jpg';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { showTaskDetail } from '../../../../redux/reducers/modalSlice';
+import useAxios from '../../../../hook/useAxios';
+import { taskDetail } from '../../../../api/taskRequest';
 
 const cx = classNames.bind(styles);
 
 const KanBanBoard = () => {
   const dispatch = useDispatch();
-  const handleShowTaskDetail = () => {
+  const taskList = useSelector((state) => state.task.taskList);
+  const axiosToken = useAxios();
+  const useList = useSelector((state) => state.auth.userList);
+  const handleShowTaskDetail = async (item) => {
+    try {
+      await taskDetail(axiosToken, item.id, dispatch);
+    } catch (err) {
+      console.log(err);
+    }
     dispatch(showTaskDetail());
   };
   const data = ['BACKLOG', 'SELECTED FOR DEVELOPMENT', 'IN PROGRESS', 'DONE'];
-  const data2 = [1, 2, 3, 2, 3, 4, 2, 1];
   return (
     <div className={cx('wrapper')}>
       <div className={cx('path')}>
@@ -31,13 +40,13 @@ const KanBanBoard = () => {
           <input type={cx('text')} />
         </div>
         <div className={cx('user')}>
-          <img src={image1} alt="error" />
-          <img src={image1} alt="error" />
-
-          <img src={image1} alt="error" />
-          <div className={cx('circle-img')}>
-            <span>+5</span>
-          </div>
+          {useList.map((item) => (
+            <i
+              key={item.id}
+              className={`${item.icon} ${cx('user-icon-kanban')}`}
+              style={{ color: `${item.color}` }}
+            ></i>
+          ))}
         </div>
         <button>Only My Issues</button>
         <button>Recently Updated</button>
@@ -46,11 +55,11 @@ const KanBanBoard = () => {
         {data.map((item, index) => (
           <div className={cx('boxTask')} key={index}>
             <p className={cx('taskType')}>{item}</p>
-            {data2.map((i, j) => {
-              if (index + 1 === i) {
+            {taskList.map((task) => {
+              if (task.status === item) {
                 return (
-                  <div onClick={handleShowTaskDetail} key={j}>
-                    <CardTask />
+                  <div onClick={() => handleShowTaskDetail(task)} key={task.id}>
+                    <CardTask task={task} />
                   </div>
                 );
               }

@@ -12,6 +12,7 @@ import {
   setProjectItem,
 } from '../../../../redux/reducers/projectSlice';
 import { showCreateProject } from '../../../../redux/reducers/modalSlice';
+import { getListTask } from '../../../../api/taskRequest';
 
 const cx = classNames.bind(styles);
 
@@ -46,9 +47,14 @@ const ProjectSideBar = () => {
     setTab(1);
     navigate('/project/board');
   };
-  const handleProjectItem = (item) => {
+  const handleProjectItem = async (item) => {
     dispatch(setProjectItem(item));
     navigate('/project/board');
+    try {
+      await getListTask(axiosToken, item.id, dispatch);
+    } catch (err) {
+      console.log(err);
+    }
     setProjectActive(item.id);
     setTab(1);
   };
@@ -57,7 +63,7 @@ const ProjectSideBar = () => {
   };
   return (
     <div className={cx('wrapper')}>
-      {Object.keys(project).length > 0 ? (
+      {project ? (
         <>
           {' '}
           <div className={cx('project-logo')}>

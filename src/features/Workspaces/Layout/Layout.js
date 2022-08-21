@@ -20,7 +20,7 @@ const Layout = () => {
   /* eslint-disable */
 
   useEffect(() => {
-    if (Object.keys(projectItem).length !== 0) {
+    if (projectItem) {
       navigate('/project/board');
     }
   }, []);
@@ -41,7 +41,7 @@ const Layout = () => {
 
       <div className={cx('content')}>
         <ToastContainer />
-        {Object.keys(projectItem).length === 0 ? (
+        {!projectItem ? (
           <div className={cx('no-project')}>
             <AiOutlineFileSearch className={cx('icon-no-project')} />
             <p>You have not selected any project yet</p>

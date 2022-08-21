@@ -21,6 +21,9 @@ const AuthSlice = createSlice({
         refreshToken: action.payload.refreshToken,
       };
     },
+    setUserList: (state, action) => {
+      return { ...state, userList: action.payload };
+    },
   },
   extraReducers: {
     [login.pending]: (state) => {
@@ -64,4 +67,4 @@ const AuthSlice = createSlice({
 });
 
 export const { reducer: authReducer } = AuthSlice;
-export const { isLogout, updateToken } = AuthSlice.actions;
+export const { isLogout, updateToken, setUserList } = AuthSlice.actions;

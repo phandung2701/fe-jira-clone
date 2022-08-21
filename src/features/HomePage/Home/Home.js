@@ -1,10 +1,30 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import classNames from 'classnames/bind';
 import styles from './home.module.scss';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserList } from '../../../api/userRequest';
+import useAxios from '../../../hook/useAxios';
+import { setUserList } from '../../../redux/reducers/authSlice';
 
 const cx = classNames.bind(styles);
 
 const Home = () => {
+  const axiosToken = useAxios();
+  const token = useSelector((state) => state.auth.accessToken);
+  const dispatch = useDispatch();
+  /* eslint-disable */
+  useEffect(() => {
+    if (!token) {
+      return;
+    } else {
+      const fetchData = async () => {
+        const data = await getUserList(axiosToken);
+        dispatch(setUserList(data));
+      };
+      fetchData();
+    }
+  }, []);
+
   return (
     <div className={cx('container')}>
       <div className={cx('container-left')}>

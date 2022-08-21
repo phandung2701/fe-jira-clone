@@ -51,16 +51,13 @@
       margin-right: 10px;
       flex-direction: row-reverse;
       position: relative;
-      img {
-        width: 32px;
-        height: 32px;
+      .user-icon-kanban {
+        font-size: 30px;
         border-radius: 50%;
-        object-fit: cover;
-        right: 0;
         cursor: pointer;
         transition: all 0.1s linear;
       }
-      img:nth-child(3) {
+      user-icon-kanban:nth-child(3) {
         margin-right: -7px;
         &:hover {
           transform: translateY(-5px);
@@ -68,7 +65,7 @@
           border: 1px solid $color-primary;
         }
       }
-      img:nth-child(2) {
+      .user-icon-kanban:nth-child(2) {
         margin-right: -7px;
         &:hover {
           transform: translateY(-5px);
@@ -76,7 +73,7 @@
           border: 1px solid $color-primary;
         }
       }
-      img:nth-child(1) {
+      .user-icon-kanban:nth-child(1) {
         &:hover {
           border: 1px solid $color-primary;
           transform: translateY(-5px);
@@ -113,6 +110,7 @@
     grid-template-columns: repeat(4, 1fr);
     gap: 8px;
     margin-top: 30px;
+
     .boxTask {
       background: #f4f5f7;
       .taskType {
