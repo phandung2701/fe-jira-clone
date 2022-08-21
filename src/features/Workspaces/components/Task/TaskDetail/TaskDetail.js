@@ -15,81 +15,12 @@ import jwtDecode from 'jwt-decode';
 import { getListTask, updateTask } from '../../../../../api/taskRequest';
 import useAxios from '../../../../../hook/useAxios';
 import { toast } from 'react-toastify';
-
+import {
+  priorityData,
+  statusList,
+  typetask,
+} from '../../../../../share/constants/task';
 const cx = classNames.bind(styles);
-
-const typetask = [
-  {
-    id: 1,
-    name: 'Task',
-    icon: 'bx bxs-checkbox-checked',
-  },
-  {
-    id: 2,
-    name: 'Bug',
-    icon: 'bx bxs-message-error',
-  },
-  {
-    id: 3,
-    name: 'Story',
-    icon: 'bx bxs-bookmark',
-  },
-];
-const statusList = [
-  {
-    id: 1,
-    name: 'BACKLOG',
-    color: '#dfe1e6',
-  },
-  {
-    id: 2,
-    name: 'SELECTED FOR DEVELOPMENT',
-    color: '#dfe1e6',
-  },
-  {
-    id: 3,
-    name: 'IN PROGRESS',
-    color: '#0052cc',
-  },
-  {
-    id: 4,
-    name: 'DONE',
-    color: '#0b875b',
-  },
-];
-
-const priorityData = [
-  {
-    id: 1,
-    name: 'Highest',
-    icon: 'bx bx-up-arrow-alt',
-    color: '#ce323a',
-  },
-  {
-    id: 2,
-    name: 'High',
-    icon: 'bx bx-up-arrow-alt',
-    color: '#e94b4c',
-  },
-  {
-    id: 3,
-    name: 'medium',
-    icon: 'bx bx-up-arrow-alt',
-    color: '#e98237',
-  },
-  {
-    id: 4,
-    name: 'low',
-    icon: 'bx bx-down-arrow-alt',
-    color: '#58a65b',
-  },
-  {
-    id: 5,
-    name: 'lowest',
-    icon: 'bx bx-down-arrow-alt',
-    color: '#5aa75d',
-  },
-];
 
 const TaskDetail = () => {
   const taskDetail = useSelector((state) => state.task.taskDetail);
@@ -111,13 +42,11 @@ const TaskDetail = () => {
   const [reporter, setReporter] = useState(
     userList.filter((item) => item.id === taskDetail.reporter)[0]
   );
-  console.log(userList.filter((item) => item.id === jwtDecode(token).id)[0]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState();
 
   const [skeditor, setSkeditor] = useState(false);
   const [boxComment, setBoxComment] = useState(false);
-  console.log(taskDetail);
 
   const desRef = useRef(null);
 
@@ -127,29 +56,6 @@ const TaskDetail = () => {
   const handleShowType = () => {
     setShowType(true);
   };
-  const handleCloseTaskDetail = () => {
-    dispatch(closeTaskDetail());
-  };
-  useEffect(() => {
-    if (desRef.current) {
-      desRef.current.innerHTML = taskDetail.description;
-    }
-  }, [taskDetail, description, skeditor]);
-
-  useEffect(() => {
-    setTitle(taskDetail.title);
-    setDescription(taskDetail.description);
-    const status = statusList.filter((item) => item.name === taskDetail.status);
-    const type = typetask.filter((item) => item.name === taskDetail.type);
-    const reporter = userList.filter((item) => item.id === taskDetail.reporter);
-    const assignees = userList.filter((item) =>
-      taskDetail.assignees.includes(item.id)
-    );
-    setStatus(status[0]);
-    setTypeIssue(type[0]);
-    setReporter(reporter[0]);
-    setAssignees(assignees);
-  }, [taskDetail]);
   const handleUpdateTaskDetail = async () => {
     try {
       console.log('ok');
@@ -190,6 +96,35 @@ const TaskDetail = () => {
       });
     }
   };
+
+  const handleCloseTaskDetail = () => {
+    handleUpdateTaskDetail();
+    dispatch(closeTaskDetail());
+  };
+  useEffect(() => {
+    if (desRef.current) {
+      desRef.current.innerHTML = taskDetail.description;
+    }
+  }, [taskDetail, description, skeditor]);
+
+  useEffect(() => {
+    setTitle(taskDetail.title);
+    setDescription(taskDetail.description);
+    const status = statusList.filter((item) => item.name === taskDetail.status);
+    const type = typetask.filter((item) => item.name === taskDetail.type);
+    const reporter = userList.filter((item) => item.id === taskDetail.reporter);
+    const assignees = userList.filter((item) => {
+      if (taskDetail.assignees !== 'undefined') {
+        return taskDetail.assignees?.includes(item.id);
+      }
+      return [];
+    });
+    console.log(typeof taskDetail.assignees);
+    setStatus(status[0]);
+    setTypeIssue(type[0]);
+    setReporter(reporter[0]);
+    setAssignees(assignees);
+  }, [taskDetail]);
 
   const handleSaveDesc = async () => {
     setSkeditor(false);
@@ -243,13 +178,7 @@ const TaskDetail = () => {
       return;
     } else {
       try {
-        const a = await updateTask(
-          axiosToken,
-          taskDetail.id,
-          { title: title },
-          dispatch
-        );
-        console.log({ title: title });
+        await updateTask(axiosToken, taskDetail.id, { title: title }, dispatch);
         await getListTask(axiosToken, taskDetail.idProject, dispatch);
         toast.success('Saved !', {
           position: 'top-right',
@@ -278,7 +207,7 @@ const TaskDetail = () => {
   const handleDeleteAssignees = (item) => {
     setAssignees(assignees.filter((i) => i.id !== item.id));
   };
-  console.log(!reporter);
+  console.log(userList);
   return (
     <Fragment>
       {showTaskDetail ? (

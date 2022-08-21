@@ -1,8 +1,9 @@
 export const getUserList = async (axios) => {
   const userList = await axios.get('/auth');
+  const userActive = userList.data.filter((item) => item.active);
   const arr = [];
-  if (userList) {
-    userList.data.forEach((user) => {
+  if (userActive) {
+    userActive.forEach((user) => {
       arr.push({
         id: user.id,
         name: user.email.split('@')[0],

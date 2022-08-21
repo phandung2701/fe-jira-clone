@@ -20,6 +20,7 @@ const Header = () => {
 
   const handleLogout = () => {
     dispatch(isLogout(''));
+    setShowBoxUser(false);
   };
 
   return (

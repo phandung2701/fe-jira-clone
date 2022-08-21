@@ -53,19 +53,19 @@ export const priorityData = [
   },
   {
     id: 3,
-    name: 'medium',
+    name: 'Medium',
     icon: 'bx bx-up-arrow-alt',
     color: '#e98237',
   },
   {
     id: 4,
-    name: 'low',
+    name: 'Low',
     icon: 'bx bx-down-arrow-alt',
     color: '#58a65b',
   },
   {
     id: 5,
-    name: 'lowest',
+    name: 'Lowest',
     icon: 'bx bx-down-arrow-alt',
     color: '#5aa75d',
   },

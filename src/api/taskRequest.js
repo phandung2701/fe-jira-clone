@@ -1,4 +1,8 @@
-import { setTaskDetail, setTaskList } from '../redux/reducers/taskSlice';
+import {
+  setTaskDetail,
+  setTaskList,
+  setTaskSearch,
+} from '../redux/reducers/taskSlice';
 
 export const createTaskRequest = async (axios, data) => {
   const task = await axios.post('/task', data);
@@ -20,8 +24,15 @@ export const taskDetail = async (axios, id, dispatch) => {
 };
 
 export const updateTask = async (axios, id, data, dispatch) => {
-  const task = await axios.patch(`/task/${id}`,data);
+  const task = await axios.patch(`/task/${id}`, data);
   if (task) {
     dispatch(setTaskDetail(task.data));
+  }
+};
+
+export const searchTask = async (axios, data, dispatch) => {
+  const tasks = await axios.post('/v1/project/search', data);
+  if (tasks) {
+    dispatch(setTaskSearch(tasks.data.tasks));
   }
 };

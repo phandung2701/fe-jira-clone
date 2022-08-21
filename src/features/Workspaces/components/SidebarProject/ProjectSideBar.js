@@ -43,6 +43,7 @@ const ProjectSideBar = () => {
     setTab(2);
     navigate('/project/settings');
   };
+  console.log(token);
   const handleKanban = () => {
     setTab(1);
     navigate('/project/board');
@@ -63,7 +64,7 @@ const ProjectSideBar = () => {
   };
   return (
     <div className={cx('wrapper')}>
-      {project ? (
+      {typeof project !== 'object' ? null : Object.keys(project).length > 0 ? (
         <>
           {' '}
           <div className={cx('project-logo')}>
@@ -90,6 +91,7 @@ const ProjectSideBar = () => {
           <div className={cx('horizontal')}></div>
         </>
       ) : null}
+
       <div className={cx('project-list')}>
         <p className={cx('title')}>Project</p>
         {projectLists.map((project) => (

@@ -83,15 +83,15 @@
         &:hover {
           background: rgb(235, 236, 240);
         }
-        .story {
+        .Story {
           color: green;
           font-size: 25px;
         }
-        .task {
+        .Task {
           color: $color-primary;
           font-size: 25px;
         }
-        .bug {
+        .Bug {
           color: #ff0000d4;
           font-size: 25px;
         }
@@ -106,6 +106,20 @@
             color: #5e6c84;
             font-size: 12px;
           }
+        }
+      }
+    }
+    .no-search {
+      text-align: center;
+      margin-top: 150px;
+      .icon-no-project {
+        font-size: 100px;
+      }
+      p {
+        &:nth-child(2) {
+          font-size: 20px;
+          font-weight: 600;
+          margin-bottom: 5px;
         }
       }
     }

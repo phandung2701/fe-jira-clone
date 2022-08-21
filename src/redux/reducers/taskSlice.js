@@ -1,15 +1,18 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getListProject } from '../action/projectAction';
 
 const taskSlice = createSlice({
   name: 'project',
   initialState: {
     taskDetail: {},
     taskList: [],
+    taskSearch: [],
   },
   reducers: {
     setTaskList: (state, action) => {
       return { ...state, taskList: action.payload };
+    },
+    setTaskSearch: (state, action) => {
+      return { ...state, taskSearch: action.payload };
     },
     setTaskDetail: (state, action) => {
       return { ...state, taskDetail: action.payload };
@@ -19,4 +22,4 @@ const taskSlice = createSlice({
 });
 
 export const { reducer: taskReducer } = taskSlice;
-export const { setTaskList, setTaskDetail } = taskSlice.actions;
+export const { setTaskList, setTaskDetail, setTaskSearch } = taskSlice.actions;

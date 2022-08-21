@@ -21,7 +21,7 @@ const VerifyAccount = () => {
 
   const [code, setCode] = useState('');
 
-  const token = useSelector((state) => state.auth.token);
+  const token = useSelector((state) => state.auth.accessToken);
 
   const navigate = useNavigate();
   const handleChangeCode = (e) => {
@@ -29,11 +29,14 @@ const VerifyAccount = () => {
     setError({ ...error, codeErr: '' });
   };
   const onVerifyAccount = async () => {
+    console.log(code);
+
     try {
       if (!code) {
         setError({ ...error, codeErr: 'This field is required' });
       } else {
         const user = jwt_decode(token);
+        console.log(jwt_decode(token));
         if (user.otp === Number(code)) {
           const verify = await dispatch(verifyAccount({ id: user.id }));
           if (verify.payload) {

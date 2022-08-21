@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { showTaskDetail } from '../../../../redux/reducers/modalSlice';
 import useAxios from '../../../../hook/useAxios';
 import { taskDetail } from '../../../../api/taskRequest';
+import TaskDetail from '../Task/TaskDetail/TaskDetail';
 
 const cx = classNames.bind(styles);
 
@@ -26,6 +27,8 @@ const KanBanBoard = () => {
   const data = ['BACKLOG', 'SELECTED FOR DEVELOPMENT', 'IN PROGRESS', 'DONE'];
   return (
     <div className={cx('wrapper')}>
+      <TaskDetail />
+
       <div className={cx('path')}>
         <p>
           <span>Projects</span> / <span>singularity 1.0</span> /{' '}
@@ -55,16 +58,20 @@ const KanBanBoard = () => {
         {data.map((item, index) => (
           <div className={cx('boxTask')} key={index}>
             <p className={cx('taskType')}>{item}</p>
-            {taskList.map((task) => {
-              if (task.status === item) {
-                return (
-                  <div onClick={() => handleShowTaskDetail(task)} key={task.id}>
-                    <CardTask task={task} />
-                  </div>
-                );
-              }
-              return null;
-            })}
+            {taskList.length > 0 &&
+              taskList.map((task) => {
+                if (task.status === item) {
+                  return (
+                    <div
+                      onClick={() => handleShowTaskDetail(task)}
+                      key={task.id}
+                    >
+                      <CardTask task={task} />
+                    </div>
+                  );
+                }
+                return null;
+              })}
           </div>
         ))}
       </div>

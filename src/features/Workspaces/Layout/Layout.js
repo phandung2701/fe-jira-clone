@@ -6,7 +6,6 @@ import ProjectSideBar from '../components/SidebarProject/ProjectSideBar';
 import { Outlet, useNavigate } from 'react-router-dom';
 import BoxSearchIssue from '../components/SearchIssues/BoxSearchIssue';
 import CreateTask from '../components/Task/CreateTask/CreateTask';
-import TaskDetail from '../components/Task/TaskDetail/TaskDetail';
 import { useSelector } from 'react-redux';
 import { AiOutlineFileSearch } from 'react-icons/ai';
 import { ToastContainer } from 'react-toastify';
@@ -20,14 +19,13 @@ const Layout = () => {
   /* eslint-disable */
 
   useEffect(() => {
-    if (projectItem) {
-      navigate('/project/board');
+    if (typeof projectItem === 'object') {
+      if (Object.keys(projectItem).length !== 0) navigate('/project/board');
     }
   }, []);
   return (
     <div className={cx('wrapper')}>
       <div className="modal-workspace">
-        <TaskDetail />
         <CreateTask />
         <BoxSearchIssue />
         <CreateProject />
@@ -41,7 +39,8 @@ const Layout = () => {
 
       <div className={cx('content')}>
         <ToastContainer />
-        {!projectItem ? (
+        {typeof projectItem === 'object' &&
+        Object.keys(projectItem).length === 0 ? (
           <div className={cx('no-project')}>
             <AiOutlineFileSearch className={cx('icon-no-project')} />
             <p>You have not selected any project yet</p>
