@@ -72,7 +72,7 @@ const Login = () => {
         } else {
           navigate('/home');
           toast.success('Logged in successfully', {
-            position: 'top-left',
+            position: 'top-right',
             autoClose: 2000,
             hideProgressBar: false,
             closeOnClick: true,

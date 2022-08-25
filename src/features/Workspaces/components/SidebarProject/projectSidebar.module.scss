@@ -36,6 +36,15 @@
       }
     }
   }
+  .clear-project {
+    position: absolute;
+    font-size: 20px;
+    left: 189px;
+    z-index: 99;
+    cursor: pointer;
+    color: red;
+    top: 35px;
+  }
   .kanban-borad,
   .project-setting,
   .project-item {

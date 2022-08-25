@@ -2,9 +2,12 @@ import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames/bind';
 import styles from './boxSearchIssue.module.scss';
-import { closeModalIssues } from '../../../../redux/reducers/modalSlice';
+import {
+  closeModalIssues,
+  showTaskDetail,
+} from '../../../../redux/reducers/modalSlice';
 import { typetask } from '../../../../share/constants/task';
-import { searchTask } from '../../../../api/taskRequest';
+import { searchTask, taskDetail } from '../../../../api/taskRequest';
 import useAxios from '../../../../hook/useAxios';
 import { toast } from 'react-toastify';
 import { AiOutlineFileSearch } from 'react-icons/ai';
@@ -53,8 +56,15 @@ const BoxSearchIssue = () => {
           draggable: true,
           progress: undefined,
         });
-        return;
       }
+    }
+  };
+  const handleShowTaskDetail = async (task) => {
+    try {
+      await taskDetail(axiosToken, task.id, dispatch);
+      dispatch(showTaskDetail());
+    } catch (err) {
+      console.log(err);
     }
   };
   return (
@@ -88,9 +98,14 @@ const BoxSearchIssue = () => {
               )}
               <div className={cx('list-issues')}>
                 {!search ? (
+                  tasks &&
                   tasks.length > 0 &&
                   tasks.map((task) => (
-                    <div className={cx('list-issue-item')} key={task.id}>
+                    <div
+                      className={cx('list-issue-item')}
+                      key={task.id}
+                      onClick={() => handleShowTaskDetail(task)}
+                    >
                       {typetask
                         .filter((item) => item.name === task.type)
                         .map((type) => (
@@ -105,9 +120,13 @@ const BoxSearchIssue = () => {
                       </div>
                     </div>
                   ))
-                ) : taskSearch.length > 0 ? (
+                ) : taskSearch && taskSearch.length > 0 ? (
                   taskSearch.map((task) => (
-                    <div className={cx('list-issue-item')} key={task.id}>
+                    <div
+                      className={cx('list-issue-item')}
+                      key={task.id}
+                      onClick={() => handleShowTaskDetail(task)}
+                    >
                       {typetask
                         .filter((item) => item.name === task.type)
                         .map((type) => (

@@ -43,7 +43,6 @@ const ProjectSideBar = () => {
     setTab(2);
     navigate('/project/settings');
   };
-  console.log(token);
   const handleKanban = () => {
     setTab(1);
     navigate('/project/board');
@@ -62,6 +61,12 @@ const ProjectSideBar = () => {
   const handleShowCreateProject = () => {
     dispatch(showCreateProject());
   };
+  const handleClearProject = () => {
+    dispatch(setProjectItem(''));
+    setProjectActive(-1);
+
+    navigate('/project');
+  };
   return (
     <div className={cx('wrapper')}>
       {typeof project !== 'object' ? null : Object.keys(project).length > 0 ? (
@@ -74,6 +79,10 @@ const ProjectSideBar = () => {
               <p>{project.category}</p>
             </div>
           </div>
+          <i
+            className={`bx bx-x ${cx('clear-project')}`}
+            onClick={handleClearProject}
+          ></i>
           <div
             className={cx('kanban-borad', tab === 1 && 'active')}
             onClick={handleKanban}

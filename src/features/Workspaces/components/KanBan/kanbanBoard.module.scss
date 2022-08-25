@@ -57,6 +57,11 @@
         cursor: pointer;
         transition: all 0.1s linear;
       }
+      .user-active {
+        transform: translateY(-5px);
+        z-index: 1000;
+        border: 1px solid $color-primary;
+      }
       .user-icon-kanban:nth-child(3) {
         margin-right: -7px;
         &:hover {
@@ -112,6 +117,9 @@
         background-color: $color-project-hover;
       }
     }
+    .myIssueActive {
+      background-color: $color-project-hover;
+    }
   }
   .board {
     display: grid;
@@ -121,6 +129,7 @@
 
     .boxTask {
       background: #f4f5f7;
+      width: 100%;
       .taskType {
         padding: 13px 10px 17px;
         text-transform: uppercase;

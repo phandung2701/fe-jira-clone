@@ -146,6 +146,7 @@ const CreateTask = () => {
     const newData = {
       idProject: projectItem.id,
       title: nameTask,
+      position: -1,
       description: description,
       type: typeIssue.name,
       priority: priority.name,
@@ -156,7 +157,6 @@ const CreateTask = () => {
     };
     try {
       const task = await createTaskRequest(axiosToken, newData);
-      console.log(task);
       toast.success('Create task successfully', {
         position: 'top-right',
         autoClose: 2000,
@@ -166,7 +166,6 @@ const CreateTask = () => {
         draggable: true,
         progress: undefined,
       });
-      console.log(newData);
       await getListTask(axiosToken, projectItem.id, dispatch);
       dispatch(closeCreateTask());
     } catch (err) {

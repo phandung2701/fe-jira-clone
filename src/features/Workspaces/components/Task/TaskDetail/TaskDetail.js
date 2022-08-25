@@ -12,7 +12,11 @@ import { MdKeyboardArrowDown } from 'react-icons/md';
 import BoxSearch from '../../../../../share/components/BoxSearch/BoxSearch';
 import { closeTaskDetail } from '../../../../../redux/reducers/modalSlice';
 import jwtDecode from 'jwt-decode';
-import { getListTask, updateTask } from '../../../../../api/taskRequest';
+import {
+  deleteTask,
+  getListTask,
+  updateTask,
+} from '../../../../../api/taskRequest';
 import useAxios from '../../../../../hook/useAxios';
 import { toast } from 'react-toastify';
 import {
@@ -51,6 +55,7 @@ const TaskDetail = () => {
   const desRef = useRef(null);
 
   const showTaskDetail = useSelector((state) => state.modal.taskDetail);
+  const projectItem = useSelector((state) => state.project.projectItem);
 
   const dispatch = useDispatch();
   const handleShowType = () => {
@@ -58,7 +63,44 @@ const TaskDetail = () => {
   };
   const handleUpdateTaskDetail = async () => {
     try {
-      console.log('ok');
+      let setPosition = {};
+      if (status.name !== taskDetail.status) {
+        switch (status.name) {
+          case 'BACKLOG':
+            setPosition = {
+              position: -1,
+              idBoard: 1,
+            };
+
+            break;
+          case 'SELECTED FOR DEVELOPMENT':
+            setPosition = {
+              position: -1,
+              idBoard: 2,
+            };
+
+            break;
+          case 'IN PROGRESS':
+            setPosition = {
+              position: -1,
+              idBoard: 3,
+            };
+
+            break;
+          case 'DONE':
+            setPosition = {
+              position: -1,
+              idBoard: 4,
+            };
+            break;
+          default:
+            setPosition = {
+              position: taskDetail.position,
+              idBoard: taskDetail.idBoard,
+            };
+            break;
+        }
+      }
       await updateTask(
         axiosToken,
         taskDetail.id,
@@ -68,7 +110,9 @@ const TaskDetail = () => {
             return [...acc, cur.id];
           }, []),
           reporter: reporter.id,
+          type: typeIssue.name,
           priority: priority.name,
+          ...setPosition,
         },
         dispatch
       );
@@ -119,7 +163,6 @@ const TaskDetail = () => {
       }
       return [];
     });
-    console.log(typeof taskDetail.assignees);
     setStatus(status[0]);
     setTypeIssue(type[0]);
     setReporter(reporter[0]);
@@ -203,11 +246,35 @@ const TaskDetail = () => {
       }
     }
   };
-
   const handleDeleteAssignees = (item) => {
     setAssignees(assignees.filter((i) => i.id !== item.id));
   };
-  console.log(userList);
+  const handleDeleteTask = async () => {
+    try {
+      await deleteTask(axiosToken, taskDetail.id, projectItem.id, dispatch);
+      dispatch(closeTaskDetail());
+      toast.success('delete successfully !', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+    } catch (err) {
+      console.log(err);
+      toast.error('delete failed', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  };
   return (
     <Fragment>
       {showTaskDetail ? (
@@ -216,18 +283,19 @@ const TaskDetail = () => {
             <div className={cx('header')}>
               <div className={cx('typeTask')}>
                 <div className={cx('box-type')} onClick={handleShowType}>
-                  {typetask
-                    .filter((item) => item.name === typeIssue.name)
-                    .map((type) => (
-                      <i
-                        key={type.id}
-                        className={`${type.icon} ${cx(
-                          type.name || '',
-                          'createTask-icon'
-                        )}`}
-                      ></i>
-                    ))}
-                  <p>{`${typeIssue.name} - ${taskDetail.id}`}</p>
+                  {typeof typeIssue === 'object' &&
+                    typetask
+                      .filter((item) => item.name === typeIssue.name)
+                      .map((type) => (
+                        <i
+                          key={type.id}
+                          className={`${type.icon} ${cx(
+                            type.name || '',
+                            'createTask-icon'
+                          )}`}
+                        ></i>
+                      ))}
+                  <p>{`${typeIssue.name || ''} - ${taskDetail.id}`}</p>
                 </div>
 
                 <BoxSearch
@@ -246,7 +314,7 @@ const TaskDetail = () => {
                   <FiLink className={cx('header-icon')} />
                   <p>Copy link</p>
                 </div>
-                <div>
+                <div onClick={handleDeleteTask}>
                   <RiDeleteBinLine className={cx('header-icon')} />
                 </div>
                 <div onClick={handleCloseTaskDetail}>
@@ -311,6 +379,7 @@ const TaskDetail = () => {
                       if (user.id === jwtDecode(token).id) {
                         return (
                           <i
+                            key={user.id}
                             className={user.icon}
                             style={{ color: `${user.color}` }}
                           ></i>
@@ -350,7 +419,7 @@ const TaskDetail = () => {
                     userList.map((user) => {
                       if (user.id === jwtDecode(token).id) {
                         return (
-                          <div className={cx('comment-item')}>
+                          <div className={cx('comment-item')} key={user.id}>
                             <i
                               className={user.icon}
                               style={{ color: `${user.color}` }}

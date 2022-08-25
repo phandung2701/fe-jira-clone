@@ -30,9 +30,28 @@ export const updateTask = async (axios, id, data, dispatch) => {
   }
 };
 
+export const deleteTask = async (axios, id, idProject, dispatch) => {
+  const task = await axios.delete(`/task/${id}`);
+  if (task) {
+    dispatch(getListTask(axios, idProject, dispatch));
+  }
+};
+
 export const searchTask = async (axios, data, dispatch) => {
   const tasks = await axios.post('/v1/project/search', data);
   if (tasks) {
     dispatch(setTaskSearch(tasks.data.tasks));
   }
+};
+
+export const searchTaskKanban = async (axios, data, dispatch) => {
+  const tasks = await axios.post('/v1/project/search', data);
+  if (tasks) {
+    dispatch(setTaskList(tasks.data.tasks));
+  }
+};
+
+export const updatePosition = async (axios, data, dispatch) => {
+  await axios.post('/v1/task/updatePosition', data);
+  await getListTask(axios, data.idProject, dispatch);
 };

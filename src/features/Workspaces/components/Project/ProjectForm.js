@@ -57,7 +57,6 @@ const ProjectForm = (props) => {
     setCategory(newCategory[0]);
     setDescription(projectItem.description);
     const user = getUserList(axiosToken);
-    user.then((res) => console.log(res));
   }, []);
 
   const handleChangeNameProject = (e) => {

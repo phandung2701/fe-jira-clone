@@ -70,3 +70,10 @@ export const priorityData = [
     color: '#5aa75d',
   },
 ];
+
+export const workspaces = [
+  { id: '1', name: 'BACKLOG', tasks: [] },
+  { id: '2', name: 'SELECTED FOR DEVELOPMENT', tasks: [] },
+  { id: '3', name: 'IN PROGRESS', tasks: [] },
+  { id: '4', name: 'DONE', tasks: [] },
+];

@@ -14,10 +14,10 @@ const root = createRoot(container);
 
 root.render(
   <Provider store={store}>
-    {/* <PersistGate loading={<LoadingSpinner />} persistor={persistStore(store)}> */}
-    <GlobalStyles>
-      <App />
-    </GlobalStyles>
-    {/* </PersistGate> */}
+    <PersistGate loading={<LoadingSpinner />} persistor={persistStore(store)}>
+      <GlobalStyles>
+        <App />
+      </GlobalStyles>
+    </PersistGate>
   </Provider>
 );
