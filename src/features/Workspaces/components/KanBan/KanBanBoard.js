@@ -10,6 +10,7 @@ import {
   taskDetail,
   updatePosition,
 } from '../../../../api/taskRequest';
+
 import TaskDetail from '../Task/TaskDetail/TaskDetail';
 import jwtDecode from 'jwt-decode';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
@@ -152,7 +153,7 @@ const KanBanBoard = () => {
   const onDragEnd = async (result) => {
     if (!result.destination) return;
     const { source, destination } = result;
-    console.log(source, destination);
+
     const sourceColIndex = data.findIndex((e) => e.id === source.droppableId);
     const destinationColIndex = data.findIndex(
       (e) => e.id === destination.droppableId
@@ -165,8 +166,6 @@ const KanBanBoard = () => {
 
     if (source.droppableId !== destination.droppableId) {
       const [removed] = sourceTasks.splice(source.index, 1);
-      console.log(removed);
-      console.log(sourceCol, destinationCol);
 
       destinationTasks.splice(destination.index, 0, removed);
       data[sourceColIndex].tasks = sourceTasks;
@@ -176,17 +175,56 @@ const KanBanBoard = () => {
       destinationTasks.splice(destination.index, 0, removed);
       data[destinationColIndex].tasks = destinationTasks;
     }
+    // const dataUpdate = {
+    //   resourceList: sourceTasks,
+    //   destinationList: destinationTasks,
+    //   sourceColIndex: sourceCol,
+    //   destinationColIndex: destinationCol,
+    //   idProject: projectItem.id,
+    // };
+    let newSourceTasks = [],
+      newDestiantionTasks = [];
+
+    if (sourceCol === destinationCol) {
+      newDestiantionTasks = destinationTasks.reduce((acc, cur, index) => {
+        return [
+          ...acc,
+          { ...cur, position: index, idBoard: destinationCol.id },
+        ];
+      }, []);
+    } else {
+      newSourceTasks = sourceTasks.reduce((acc, cur, index) => {
+        return [
+          ...acc,
+          {
+            ...cur,
+            position: index,
+            idBoard: sourceCol.id,
+            status: sourceCol.name,
+          },
+        ];
+      }, []);
+      newDestiantionTasks = destinationTasks.reduce((acc, cur, index) => {
+        return [
+          ...acc,
+          {
+            ...cur,
+            position: index,
+            idBoard: destinationCol.id,
+            status: destinationCol.name,
+          },
+        ];
+      }, []);
+    }
     const dataUpdate = {
-      resourceList: sourceTasks,
-      destinationList: destinationTasks,
+      resourceList: newSourceTasks,
+      destinationList: newDestiantionTasks,
       sourceColIndex: sourceCol,
       destinationColIndex: destinationCol,
       idProject: projectItem.id,
     };
     try {
       await updatePosition(axiosToken, dataUpdate, dispatch);
-
-      setData(data);
     } catch (err) {
       console.log(err);
     }

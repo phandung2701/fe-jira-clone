@@ -24,13 +24,14 @@ import {
   statusList,
   typetask,
 } from '../../../../../share/constants/task';
+import useDate from '../../../../../hook/useDate';
 const cx = classNames.bind(styles);
 
 const TaskDetail = () => {
   const taskDetail = useSelector((state) => state.task.taskDetail);
   const userList = useSelector((state) => state.auth.userList);
   const token = useSelector((state) => state.auth.accessToken);
-
+  const { dateDiff } = useDate();
   const axiosToken = useAxios();
 
   const [showType, setShowType] = useState(false);
@@ -46,6 +47,7 @@ const TaskDetail = () => {
   const [reporter, setReporter] = useState(
     userList.filter((item) => item.id === taskDetail.reporter)[0]
   );
+  const [duedate, setDuedate] = useState(taskDetail.duedate ?? 0);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState();
 
@@ -60,6 +62,35 @@ const TaskDetail = () => {
   const dispatch = useDispatch();
   const handleShowType = () => {
     setShowType(true);
+  };
+  const handleChangeDuedate = async (e) => {
+    setDuedate(e.target.value);
+    try {
+      await updateTask(
+        axiosToken,
+        taskDetail.id,
+        { duedate: e.target.value },
+        dispatch
+      );
+
+      await getListTask(axiosToken, taskDetail.idProject, dispatch);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const handleBlurDuedate = (e) => {
+    if (e.target.value === '' || !Number(e.target.value)) {
+      setDuedate(4);
+      toast.error('update failed', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   };
   const handleUpdateTaskDetail = async () => {
     try {
@@ -553,22 +584,55 @@ const TaskDetail = () => {
                 </div>
                 <div className={cx('duedate')}>
                   <p className={cx('title')}>ORIGINAL ESTIMATE (HOURS)</p>
-                  <input type="text" name="hours" />
+                  <input
+                    type="text"
+                    name="hours"
+                    value={duedate}
+                    onChange={(e) => handleChangeDuedate(e)}
+                    onBlur={(e) => handleBlurDuedate(e)}
+                  />
                 </div>
                 <div className={cx('time-checking')}>
                   <p className={cx('title')}>TIME TRACKING</p>
                   <div className={cx('time-checking-box')}>
                     <FcAlarmClock className={cx('time-icon')} />
                     <div className={cx('time-range')}>
-                      <input type="range" />
+                      <input
+                        type="range"
+                        min={0}
+                        max={duedate}
+                        value={dateDiff.isHours(
+                          new Date(taskDetail.createdAt).toLocaleString(),
+                          new Date().toLocaleString()
+                        )}
+                        readOnly={true}
+                      />
                       <div className={cx('time-logged')}>
-                        <p>12h logged</p>
-                        <p>18h reamaining</p>
+                        <p>
+                          {dateDiff.isHours(
+                            new Date(taskDetail.createdAt).toLocaleString(),
+                            new Date().toLocaleString()
+                          )}
+                          h logged
+                        </p>
+                        <p>{duedate}h estimate</p>
                       </div>
                     </div>
                   </div>
-                  <p className={cx('add-info')}>Created at 5 days ago </p>
-                  <p className={cx('add-info')}>Updated at 3 days ago</p>
+                  <p className={cx('add-info')}>
+                    Created at {dateDiff.timeAgos(taskDetail.createdAt)}
+                  </p>
+                  <p className={cx('add-info')}>
+                    Updated at {dateDiff.timeAgos(taskDetail.updatedAt)}
+                  </p>
+                  {Number(
+                    dateDiff.isHours(
+                      new Date(taskDetail.createdAt).toLocaleString(),
+                      new Date().toLocaleString()
+                    )
+                  ) > Number(taskDetail.duedate) && (
+                    <p className={cx('outOfDate')}>Đã quá hạn</p>
+                  )}
                 </div>
                 {/*  */}
               </div>

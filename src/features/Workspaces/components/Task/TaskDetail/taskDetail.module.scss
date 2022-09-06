@@ -10,7 +10,7 @@
   right: 0;
   bottom: 0;
   background: rgba(9, 30, 66, 0.54);
-  z-index: 102;
+  z-index: 1000;
   overflow-y: auto;
   padding-bottom: 60px;
   .container {
@@ -387,6 +387,10 @@
           &:nth-child(1) {
             margin-top: 10px;
           }
+        }
+        .outOfDate {
+          color: red;
+          margin-top: 50px;
         }
         .time-checking {
           font-size: 13px;
