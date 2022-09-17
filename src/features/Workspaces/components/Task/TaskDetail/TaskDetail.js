@@ -47,7 +47,7 @@ const TaskDetail = () => {
   const [reporter, setReporter] = useState(
     userList.filter((item) => item.id === taskDetail.reporter)[0]
   );
-  const [duedate, setDuedate] = useState(taskDetail.duedate ?? 0);
+  const [duedate, setDuedate] = useState(4);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState();
 
@@ -198,6 +198,7 @@ const TaskDetail = () => {
     setTypeIssue(type[0]);
     setReporter(reporter[0]);
     setAssignees(assignees);
+    setDuedate(taskDetail.duedate);
   }, [taskDetail]);
 
   const handleSaveDesc = async () => {
